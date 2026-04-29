@@ -46,7 +46,7 @@ export async function GET(
         payee,
         chains: ["0g-galileo"],
         network: "0g-galileo",
-        chainId: 16601,
+        chainId: 16602,
         serviceName: service.serviceName,
         description: service.description,
         fulfillmentMode: service.fulfillmentMode,

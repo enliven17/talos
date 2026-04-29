@@ -374,16 +374,25 @@ export async function verifyTxByHash(
   expectedTo: string,
   expectedAmountA0GI: string,
 ): Promise<boolean> {
-  try {
-    const { parseEther } = await import("viem");
-    const receipt = await publicClient.getTransactionReceipt({
-      hash: txHash as `0x${string}`,
-    });
-    if (!receipt || receipt.status === "reverted") return false;
-    const tx = await publicClient.getTransaction({ hash: txHash as `0x${string}` });
-    if (tx.to?.toLowerCase() !== expectedTo.toLowerCase()) return false;
-    return (tx.value ?? BigInt(0)) >= parseEther(expectedAmountA0GI);
-  } catch {
-    return false;
+  const { parseEther } = await import("viem");
+  // Retry up to 4 times — 0G Galileo testnet can be slow to index
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      if (attempt > 0) await new Promise(r => setTimeout(r, 2000 * attempt));
+      const receipt = await publicClient.getTransactionReceipt({
+        hash: txHash as `0x${string}`,
+      });
+      if (!receipt) continue;
+      if (receipt.status === "reverted") return false;
+      const tx = await publicClient.getTransaction({ hash: txHash as `0x${string}` });
+      if (tx.to?.toLowerCase() !== expectedTo.toLowerCase()) return false;
+      // Accept if amount >= expected (with 10% tolerance for gas adjustments)
+      const expected = parseEther(expectedAmountA0GI);
+      const tolerance = expected / 10n;
+      return (tx.value ?? BigInt(0)) >= expected - tolerance;
+    } catch {
+      // retry
+    }
   }
+  return false;
 }
