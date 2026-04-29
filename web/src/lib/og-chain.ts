@@ -388,7 +388,7 @@ export async function verifyTxByHash(
       if (tx.to?.toLowerCase() !== expectedTo.toLowerCase()) return false;
       // Accept if amount >= expected (with 10% tolerance for gas adjustments)
       const expected = parseEther(expectedAmountA0GI);
-      const tolerance = expected / 10n;
+      const tolerance = expected / BigInt(10);
       return (tx.value ?? BigInt(0)) >= expected - tolerance;
     } catch {
       // retry
