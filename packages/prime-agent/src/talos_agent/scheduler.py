@@ -51,10 +51,14 @@ async def run(settings: Settings, agent_slot: int = 0) -> None:
     from talos_agent.browser.session import BrowserSession
     from talos_agent.tools.registry import build_all_tools
 
-    # Start browser session
-    console.print("[bold]Starting browser session...[/bold]")
-    browser = await BrowserSession.start(model_api_key=settings.llm_api_key)
-    console.print("[green]Browser ready.[/green]")
+    # Start browser session (best-effort — agent continues without it)
+    browser = None
+    try:
+        console.print("[bold]Starting browser session...[/bold]")
+        browser = await BrowserSession.start(model_api_key=settings.llm_api_key)
+        console.print("[green]Browser ready.[/green]")
+    except Exception as browser_err:
+        console.print(f"[yellow]Browser unavailable ({browser_err}) — continuing without browser tools[/yellow]")
 
     # Create AXL client early so its reference can be injected into tools
     axl_client = None
