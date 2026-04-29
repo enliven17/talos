@@ -1,0 +1,7 @@
+{
+  "PrivateKeyPath": "/home/enliven/axl/private.pem",
+  "Peers": ["tls://34.46.48.224:9001"],
+  "api_port": 9002,
+  "bridge_addr": "127.0.0.1",
+  "tcp_port": 7000
+}
