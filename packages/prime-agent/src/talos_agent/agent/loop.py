@@ -94,8 +94,8 @@ async def agent_loop(
         for tc in msg.tool_calls:
             fn_name = tc.function.name
             try:
-                args = json.loads(tc.function.arguments)
-            except json.JSONDecodeError:
+                args = json.loads(tc.function.arguments) or {}
+            except (json.JSONDecodeError, TypeError):
                 args = {}
 
             console.print(f"[yellow]Tool:[/yellow] {fn_name}({_truncate_args(args)})")
