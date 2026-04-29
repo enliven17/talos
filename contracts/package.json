@@ -1,0 +1,18 @@
+{
+  "name": "@talos/contracts",
+  "version": "0.1.0",
+  "description": "CosmWasm smart contracts for Talos Protocol on Initia",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "cargo build --target wasm32-unknown-unknown --release",
+    "deploy": "node deploy-node.mjs"
+  },
+  "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.32.4",
+    "@cosmjs/proto-signing": "^0.32.4",
+    "@cosmjs/stargate": "^0.32.4",
+    "cosmjs-types": "^0.9.0"
+  },
+  "license": "MIT"
+}
