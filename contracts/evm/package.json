@@ -1,0 +1,16 @@
+{
+  "name": "@talos/evm-contracts",
+  "version": "0.1.0",
+  "description": "Talos Protocol EVM contracts for Initia EVM rollup",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy": "hardhat run scripts/deploy.js --network og_galileo",
+    "deploy:local": "hardhat run scripts/deploy.js --network hardhat"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^17.4.2",
+    "hardhat": "^2.22.0"
+  }
+}
