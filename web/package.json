@@ -1,0 +1,76 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.33.0",
+  "private": true,
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test:e2e": "vitest run tests/api-e2e.test.ts",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:check": "tsx scripts/check-db.ts",
+    "db:seed": "tsx src/db/seed.ts",
+    "db:seed-demo": "tsx scripts/seed-demo-agents.ts",
+    "db:show-keys": "tsx scripts/show-api-keys.ts"
+  },
+  "dependencies": {
+    "@0glabs/0g-ts-sdk": "^0.3.3",
+    "@cosmjs/cosmwasm-stargate": "^0.36.0",
+    "@cosmjs/proto-signing": "^0.36.0",
+    "@cosmjs/stargate": "^0.36.0",
+    "@initia/interwovenkit-react": "^2.6.0",
+    "@noble/hashes": "1.8.0",
+    "@paralleldrive/cuid2": "^3.3.0",
+    "@tanstack/react-query": "^5.80.7",
+    "@wagmi/core": "^2.16.9",
+    "connectkit": "^1.9.2",
+    "cosmjs-types": "^0.9.0",
+    "drizzle-orm": "^0.45.2",
+    "ethers": "^6.16.0",
+    "mermaid": "^11.14.0",
+    "next": "16.2.4",
+    "openai": "^6.33.0",
+    "pg": "^8.20.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "viem": "^2.31.3",
+    "wagmi": "^2.15.4",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^17.4.0",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "tailwindcss": "^4",
+    "tsx": "^4.21.0",
+    "typescript": "^5",
+    "vitest": "^4.1.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@noble/hashes": "1.8.0",
+      "ky": "1.14.3"
+    },
+    "onlyBuiltDependencies": [
+      "bufferutil",
+      "esbuild",
+      "keccak",
+      "protobufjs",
+      "sharp",
+      "unrs-resolver",
+      "utf-8-validate"
+    ]
+  }
+}
