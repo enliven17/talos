@@ -1,38 +1,29 @@
-# ─── Talos Prime Agent — Railway Docker Image ─────────────────────────────────
-# Python + Node.js + Chromium for headless browser automation via Stagehand.
-# Sets BROWSER_HEADLESS=true by default for server environments.
+# ─── Stage 1: Build Gensyn AXL from source ────────────────────────────────────
+# AXL has no pre-built releases — must be compiled with Go.
+# Docs: https://docs.gensyn.ai/tech/agent-exchange-layer
+FROM golang:1.24-bookworm AS axl-builder
 
+RUN apt-get update && apt-get install -y --no-install-recommends git openssl && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN git clone --depth 1 https://github.com/gensyn-ai/axl.git /axl
+
+WORKDIR /axl
+RUN go build -o /axl/axl ./cmd/node && chmod +x /axl/axl
+
+# ─── Stage 2: Talos Prime Agent runtime ───────────────────────────────────────
 FROM python:3.11-slim
 
 # ── System dependencies ────────────────────────────────────────────────────────
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
-    wget \
-    gnupg2 \
-    ca-certificates \
-    # Chromium + dependencies
-    chromium \
-    fonts-freefont-ttf \
-    fonts-liberation \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libglib2.0-0 \
-    libnspr4 \
-    libnss3 \
-    libx11-6 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxrandr2 \
-    libxss1 \
-    libxtst6 \
-    xvfb \
+    curl wget gnupg2 ca-certificates openssl \
+    chromium fonts-freefont-ttf fonts-liberation \
+    libatk-bridge2.0-0 libatk1.0-0 libcups2 libdbus-1-3 libglib2.0-0 \
+    libnspr4 libnss3 libx11-6 libxcomposite1 libxdamage1 libxext6 \
+    libxfixes3 libxrandr2 libxss1 libxtst6 xvfb \
     && rm -rf /var/lib/apt/lists/*
 
-# ── Node.js 20 (required for Stagehand SEA server) ────────────────────────────
+# ── Node.js 20 (required for Stagehand) ───────────────────────────────────────
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y --no-install-recommends nodejs \
     && rm -rf /var/lib/apt/lists/*
@@ -41,42 +32,31 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/root/.local/bin:$PATH"
 
-# ── Gensyn AXL binary (P2P agent mesh) ────────────────────────────────────────
-# AXL provides encrypted peer-to-peer communication between Talos agents.
-# Docs: https://docs.gensyn.ai/tech/agent-exchange-layer
-RUN ARCH=$(uname -m) && \
-    if [ "$ARCH" = "x86_64" ]; then AXL_ARCH="amd64"; \
-    elif [ "$ARCH" = "aarch64" ]; then AXL_ARCH="arm64"; \
-    else AXL_ARCH="amd64"; fi && \
-    curl -fsSL "https://github.com/gensyn-ai/axl/releases/latest/download/axl-linux-${AXL_ARCH}" \
-        -o /usr/local/bin/axl && \
-    chmod +x /usr/local/bin/axl || \
-    echo "AXL binary not available for this arch — P2P will be disabled at runtime"
+# ── Copy AXL binary from builder stage ────────────────────────────────────────
+COPY --from=axl-builder /axl/axl /usr/local/bin/axl
 
-# ── Playwright Chromium (keyboard fallback) ────────────────────────────────────
-# Tell Playwright to use the system Chromium installed above
+# ── Generate AXL ed25519 private key ─────────────────────────────────────────
+RUN mkdir -p /root/.talos-agent/axl && \
+    openssl genpkey -algorithm ed25519 -out /root/.talos-agent/axl/private.pem && \
+    echo '{"PrivateKeyPath":"/root/.talos-agent/axl/private.pem","Peers":["tls://34.46.48.224:9001"],"api_port":9002,"bridge_addr":"0.0.0.0","tcp_port":7000}' \
+    > /root/.talos-agent/axl/node-config.json
+
 ENV PLAYWRIGHT_BROWSERS_PATH=/usr/bin
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV CHROMIUM_FLAGS="--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage"
 
 WORKDIR /app
 
-# ── Copy source and dependencies (required for uv sync) ──────────────────────
 COPY pyproject.toml uv.lock ./
 COPY src/ ./src/
 
-# ── Install Python dependencies (layer-cached) ────────────────────────────────
 RUN uv sync --frozen --no-dev
 
-# ── Runtime environment ────────────────────────────────────────────────────────
 ENV PYTHONUNBUFFERED=1
-# Headless is required in Railway (no display server)
 ENV BROWSER_HEADLESS=true
-# Stagehand: local mode with headless Chromium
 ENV STAGEHAND_HEADLESS=true
+ENV AXL_BINARY=/usr/local/bin/axl
 
-# ── Healthcheck — verify agent can import cleanly ─────────────────────────────
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-    CMD uv run python -c "from talos_agent.config import Settings; Settings()" || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 CMD uv run python -c "from talos_agent.config import Settings; Settings()" || exit 1
 
 CMD ["uv", "run", "talos-agent", "start"]
