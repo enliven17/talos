@@ -50,7 +50,7 @@ class Settings(BaseSettings):
 
     # Groq (fallback — free, fast)
     groq_api_key: str = ""
-    groq_model: str = "llama-3.1-8b-instant"  # 500K TPD vs 100K for 70b
+    groq_model: str = "llama3-groq-8b-8192-tool-use-preview"
 
     # OpenAI (last fallback)
     openai_api_key: str = ""
