@@ -1,7 +1,9 @@
 # ─── Stage 1: Build Gensyn AXL from source ────────────────────────────────────
 # AXL has no pre-built releases — must be compiled with Go.
 # Docs: https://docs.gensyn.ai/tech/agent-exchange-layer
-FROM golang:1.24-bookworm AS axl-builder
+FROM golang:1.25-bookworm AS axl-builder
+
+ENV GOTOOLCHAIN=auto
 
 RUN apt-get update && apt-get install -y --no-install-recommends git openssl && \
     rm -rf /var/lib/apt/lists/*
