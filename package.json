@@ -1,0 +1,35 @@
+{
+  "name": "talos-protocol",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.33.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --dir web dev",
+    "build": "pnpm --dir web build",
+    "lint": "pnpm --dir web lint",
+    "web:install": "pnpm --dir web install",
+    "web:db:push": "pnpm --dir web db:push",
+    "web:db:seed": "pnpm --dir web db:seed"
+  },
+  "dependencies": {
+    "next": "16.2.4"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "pnpm": {
+    "overrides": {
+      "@noble/hashes": "1.8.0",
+      "ky": "1.14.3"
+    },
+    "onlyBuiltDependencies": [
+      "bufferutil",
+      "esbuild",
+      "keccak",
+      "protobufjs",
+      "sharp",
+      "unrs-resolver",
+      "utf-8-validate"
+    ]
+  }
+}

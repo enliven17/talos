@@ -1,0 +1,72 @@
+# ─── Dependencies ─────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ─── Build outputs ────────────────────────────────────────
+.next/
+dist/
+out/
+build/
+*.tsbuildinfo
+
+# ─── Environment / secrets ────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.railway
+*.pem
+
+# ─── Python ───────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+*.db
+*.sqlite
+
+# ─── Logs ─────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ─── OS ───────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── IDE ──────────────────────────────────────────────────
+.vscode/
+.idea/
+
+# ─── AI tool caches (not project code) ───────────────────
+.claude/
+.qwen/
+.gstack/
+
+# ─── Vercel ───────────────────────────────────────────────
+.vercel
+
+# ─── Temporary scripts (used during setup) ────────────────
+web/ens-register.mjs
+web/scripts/update-ens-txhash.ts
+
+# ─── Legacy / unused ──────────────────────────────────────
+hedera-example/
+talos-stellar.db
+
+# ─── Rust / Soroban (not used in this project) ────────────
+target/
+.soroban/
+*.wasm
+
+# ─── Hardhat ──────────────────────────────────────────────
+contracts/evm/cache/
+contracts/evm/artifacts/
+
+# ─── Python uv ────────────────────────────────────────────
+.python-version
