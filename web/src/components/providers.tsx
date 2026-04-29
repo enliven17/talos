@@ -77,13 +77,6 @@ export function Providers({ children }: PropsWithChildren) {
             walletConnectCTA: "link",
             avoidLayoutShift: true,
           }}
-          onError={(error) => {
-            // Suppress "request cancelled" from Safe/WalletConnect auto-probing
-            if (error?.message?.includes("request cancelled") ||
-                error?.message?.includes("Request cancelled") ||
-                error?.code === 4001) return;
-            console.error("[ConnectKit]", error);
-          }}
         >
           {children}
         </ConnectKitProvider>
