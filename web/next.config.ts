@@ -7,14 +7,6 @@ const outputFileTracingRoot = existsSync(path.join(monorepoRoot, "pnpm-workspace
   ? monorepoRoot
   : undefined;
 
-// Real @wagmi/connectors is in the pnpm store, not hoisted to web/node_modules.
-// We alias it so webpack can find it at build time.
-const realWagmiConnectors = path.resolve(
-  __dirname,
-  "../node_modules/.pnpm/node_modules/@wagmi/connectors/dist/esm/exports/index.js"
-);
-const aaveAccountStub = path.resolve(__dirname, "node_modules/@aave/account/index.js");
-
 const nextConfig: NextConfig = {
   ...(outputFileTracingRoot ? { outputFileTracingRoot } : {}),
   transpilePackages: [
@@ -24,14 +16,6 @@ const nextConfig: NextConfig = {
     "@noble/hashes",
     "connectkit",
   ],
-  webpack(config) {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "@wagmi/connectors": realWagmiConnectors,
-      "@aave/account": aaveAccountStub,
-    };
-    return config;
-  },
 };
 
 export default nextConfig;

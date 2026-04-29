@@ -1,6 +1,6 @@
 {
   "installCommand": "pnpm install",
-  "buildCommand": "pnpm run build -- --webpack",
+  "buildCommand": "pnpm run build",
   "framework": "nextjs",
   "regions": ["iad1"],
   "build": {
